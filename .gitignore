@@ -1,0 +1,30 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Env files
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# Models and local data
+models/*
+!models/.gitkeep
+!models/README.md
+
+data/*
+!data/.gitkeep
+!data/open-webui/
+data/open-webui/*
+!data/open-webui/.gitkeep
+
+# Docker / local runtime artifacts
+*.pid

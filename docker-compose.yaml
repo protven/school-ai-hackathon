@@ -1,0 +1,65 @@
+name: local-rag-demo
+
+services:
+  open-webui:
+    image: ${OPENWEBUI_IMAGE}
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "${OPENWEBUI_PORT}:8080"
+    environment:
+      WEBUI_AUTH: "${OPENWEBUI_AUTH}"
+      ENABLE_PERSISTENT_CONFIG: "${OPENWEBUI_ENABLE_PERSISTENT_CONFIG}"
+
+      OPENAI_API_BASE_URL: "${OPENWEBUI_OPENAI_API_BASE_URL}"
+      OPENAI_API_KEY: "${OPENWEBUI_OPENAI_API_KEY}"
+
+      RAG_EMBEDDING_ENGINE: "${OPENWEBUI_RAG_EMBEDDING_ENGINE}"
+      RAG_OPENAI_API_BASE_URL: "${OPENWEBUI_RAG_OPENAI_API_BASE_URL}"
+      RAG_OPENAI_API_KEY: "${OPENWEBUI_RAG_OPENAI_API_KEY}"
+      RAG_EMBEDDING_MODEL: "${OPENWEBUI_RAG_EMBEDDING_MODEL}"
+
+      CHUNK_SIZE: "${OPENWEBUI_CHUNK_SIZE}"
+      CHUNK_OVERLAP: "${OPENWEBUI_CHUNK_OVERLAP}"
+    volumes:
+      - ./data/open-webui:/app/backend/data
+    depends_on:
+      - llama-chat
+      - llama-embed
+
+  llama-chat:
+    image: ${LLAMACPP_IMAGE}
+    container_name: llama-chat
+    restart: unless-stopped
+    ports:
+      - "${LLAMA_CHAT_PORT}:8080"
+    volumes:
+      - ./models:/models:ro
+    environment:
+      LLAMA_ARG_MODEL: "${LLAMA_CHAT_MODEL}"
+      LLAMA_ARG_HOST: "0.0.0.0"
+      LLAMA_ARG_PORT: "8080"
+      LLAMA_ARG_CTX_SIZE: "${LLAMA_CHAT_CTX_SIZE}"
+      LLAMA_ARG_THREADS: "${LLAMA_CHAT_THREADS}"
+      LLAMA_ARG_N_PARALLEL: "${LLAMA_CHAT_N_PARALLEL}"
+      LLAMA_ARG_BATCH: "${LLAMA_CHAT_BATCH}"
+      LLAMA_ARG_ENDPOINT_METRICS: "1"
+
+  llama-embed:
+    image: ${LLAMACPP_IMAGE}
+    container_name: llama-embed
+    restart: unless-stopped
+    ports:
+      - "${LLAMA_EMBED_PORT}:8080"
+    volumes:
+      - ./models:/models:ro
+    environment:
+      LLAMA_ARG_MODEL: "${LLAMA_EMBED_MODEL}"
+      LLAMA_ARG_HOST: "0.0.0.0"
+      LLAMA_ARG_PORT: "8080"
+      LLAMA_ARG_CTX_SIZE: "${LLAMA_EMBED_CTX_SIZE}"
+      LLAMA_ARG_THREADS: "${LLAMA_EMBED_THREADS}"
+      LLAMA_ARG_N_PARALLEL: "${LLAMA_EMBED_N_PARALLEL}"
+      LLAMA_ARG_BATCH: "${LLAMA_EMBED_BATCH}"
+      LLAMA_ARG_EMBEDDINGS: "1"
+      LLAMA_ARG_ENDPOINT_METRICS: "1"
